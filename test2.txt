@@ -1,0 +1,9 @@
+java -jar C:\MyPrograms\Java\Repeater3\dist\Repeater3.jar E:\Genomes\Nomada_hirtipes\ch16.fasta 
+
+java -jar -Xms8g -Xmx32g C:\MyPrograms\Java\Repeater3\dist\Repeater3.jar E:\Genomes\Hydra_vulgaris\ kmer=21 min=100 sln=150
+
+java -jar -Xms8g -Xmx32g C:\MyPrograms\Java\Repeater3\dist\Repeater3.jar E:\Genomes\GRCh38.p14\
+
+java -jar C:\MyPrograms\Java\Repeater3\dist\Repeater3.jar E:\Genomes\Coelopa_pilipes\ image=5000x3000
+
+ 
