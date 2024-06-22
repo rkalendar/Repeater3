@@ -24,8 +24,8 @@ public final class Tandems {
 
     public void SetKmerLen(int i) {
         kmerln = i;
-        if (kmerln < 5) {
-            kmerln = 5;
+        if (kmerln < 12) {
+            kmerln = 12;
         }
         minlenblock = kmerln + kmerln;
         minlenseq = minlenblock;
@@ -83,7 +83,7 @@ public final class Tandems {
         startTime = System.nanoTime();
         for (int i = 0; i < nseq; i++) {
             ArrayList<Integer> u = Mask(seq[i], kmerln, kmerln);
-            ClusteringMasking(seq[i], u);
+            ClusteringMasking(seq[i], u, kmerln);
             PrintResult(i);
             PictureSave(i, iwidth, iheight);
         }
@@ -279,7 +279,7 @@ public final class Tandems {
         return z2;
     }
 
-    private int ClusteringMasking(String seq, ArrayList<Integer> u) {
+    private int ClusteringMasking(String seq, ArrayList<Integer> u, int kmer) {
         int n = u.size();
         if (n < 2) {
             return -1;
@@ -293,38 +293,33 @@ public final class Tandems {
             x.add(x1);// location on sequence
             z.add(s); // repeat sequence
         }
-        int[] k = new int[z.size()];
+
         String[] s = new String[z.size()];
         s = z.toArray(s);
 
-        SequencesClustering sc = new SequencesClustering(s, 90, true);
+        SequencesClustering sc = new SequencesClustering(s, 90, true, kmer, minlenseq);
+        int[] q = sc.Result();
         int ncl = sc.getNcl();
-        int[] cls = sc.getClusters(); // list sequences belong to ID clusters
-        for (int i = 0; i < z.size(); i++) {
-            if (cls[i] == 0) {
-                ncl++;
-                cls[i] = ncl;
-                k[ncl]++;
-            } else {
-                k[cls[i]]++; // sequences to cluster ID
-            }
+
+        if (ncl < 1) {
+            return -1;
         }
 
         bb = new ArrayList<>();
-
         for (int f = 1; f < ncl + 1; f++) {
-            int[] k7 = new int[k[f] + k[f] + 1];
+            int[] k7 = new int[ncl + ncl + 1];
             int h = 0;
-            k7[0] = k[f] + k[f];
-            for (int j = 0; j < z.size(); j++) {
-                if (cls[j] == f) {
+            k7[0] = 0;
+            for (int j = 0; j < q.length; j++) {
+                if (q[j] == f) {
                     h++;
                     k7[h] = x.get(j);
                     h++;
                     k7[h] = s[j].length();
+                    k7[0] = k7[0] + 2;
                 }
             }
-            bb.add(k7);
+            bb.add(ArrayTrim(k7, h + 1));
         }
         return bb.size();
     }
@@ -390,9 +385,7 @@ public final class Tandems {
         }
 
         try (FileWriter fileWriter = new FileWriter(reportfile)) {
-
             System.out.println("Saving report file: " + reportfile);
-
             fileWriter.write("Sequence coverage by repeats " + String.format("%.2f", z) + "%\n\n");
 
             fileWriter.write(sr.toString());
