@@ -1,4 +1,3 @@
-
 import java.util.Arrays;
 
 public final class ReadingSequencesFiles {
@@ -31,7 +30,7 @@ public final class ReadingSequencesFiles {
         return ns;
     }
 
-    private void ReadingSequences() {
+       private void ReadingSequences() {
         if (source == null) {
             return;
         }
