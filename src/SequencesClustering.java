@@ -1,4 +1,3 @@
-
 import java.util.HashMap;
 
 public final class SequencesClustering {
@@ -32,7 +31,6 @@ public final class SequencesClustering {
         String a;
         int[] lx = new int[nseq];
         HashMap<String, int[]> map = new HashMap<>();
-        //  Map<String, int[]> m = new TreeMap<>();
         HashMap<String, int[]> m = new HashMap<>();
 
         for (int j = 0; j < nseq; j++) {

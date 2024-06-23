@@ -51,7 +51,6 @@ public class Repeater {
                     kmer = 12;
                 }
             }
-            kmer = 21;
             if (s.contains("image=")) { // image=10000x3000
                 int j = s.indexOf("image=");
                 int x = s.indexOf(" ", j);
@@ -121,7 +120,7 @@ public class Repeater {
             }
 
         } else {
-            System.out.println("REPEATER 3 (2024) by Ruslan Kalendar (ruslan.kalendar@helsinki.fi)\nhttps://github.com/rkalendar/Repeater\n");
+            System.out.println("REPEATER 3 (2024) by Ruslan Kalendar (ruslan.kalendar@helsinki.fi)\nhttps://github.com/rkalendar/Repeater3\n");
             System.out.println("Basic usage:");
             System.out.println("java -jar \\Repeater3\\dist\\Repeater3.jar <inputfile>/<inputfolderpath> <optional_commands>");
             System.out.println("Common options:");
