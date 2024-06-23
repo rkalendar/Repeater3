@@ -235,9 +235,15 @@ public final class Tandems {
                         i = j;
                         z.add(x1);
                         z.add(x2);
+                        x2 = 0;
                         break;
                     }
                 }
+                if (x2 > x1) {
+                    z.add(x1);
+                    z.add(x2);
+                }
+
             }
         }
         for (i = 0; i < z.size(); i += 2) {
