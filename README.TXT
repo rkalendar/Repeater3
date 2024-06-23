@@ -33,11 +33,11 @@ java -jar \Repeater3\dist\Repeater3.jar <inputfile> ssr=true seqshow=true flanks
 
 Large genome usage:
 
-java -jar -Xms4g -Xmx32g \Repeater3\dist\Repeater3.jar <inputfolderpath> kmer=21 min=100 sln=550
+java -jar -Xms4g -Xmx32g \Repeater3\dist\Repeater3.jar <inputfolderpath> kmer=28 min=100 sln=550
 
 
 Common options:
-kmer=5	 minimal kmer=5 (default kmer=12)
+kmer=12	 minimal kmer=12 (default kmer=21)
 
 min=50	 initial repeat length (default min=50)
 
