@@ -12,7 +12,6 @@ public class Repeater {
             String s = String.join(" ", args).toLowerCase() + " ";
             int kmer = 21;
             int minlen = 50;
-            int seqlen = 100;
             int width = 0;
             int hight = 0;
             int flanksshow = 0;
@@ -84,16 +83,6 @@ public class Repeater {
                 }
             }
 
-            if (s.contains("sln=")) {
-                int j = s.indexOf("sln=");
-                int x = s.indexOf(" ", j);
-                if (x > j) {
-                    seqlen = StrToInt(s.substring(j + 4, x));
-                }
-                if (seqlen < minlen) {
-                    seqlen = minlen;
-                }
-            }
 
             File folder = new File(infile);
             if (folder.exists() && (folder.isDirectory() || folder.isFile())) {
@@ -108,25 +97,24 @@ public class Repeater {
                     }
                     for (String nfile : filelist) {
                         try {
-                            SaveResult(nfile, kmer, minlen, seqlen, flanksshow, seqshow, ssrrun, width, hight);
+                            SaveResult(nfile, kmer, minlen, flanksshow, seqshow, ssrrun, width, hight);
                         } catch (Exception e) {
                             System.err.println("Failed to open file: " + nfile);
                         }
                     }
 
                 } else {
-                    SaveResult(infile, kmer, minlen, seqlen, flanksshow, seqshow, ssrrun, width, hight);
+                    SaveResult(infile, kmer, minlen, flanksshow, seqshow, ssrrun, width, hight);
                 }
             }
 
         } else {
-            System.out.println("REPEATER 3 (2024) by Ruslan Kalendar (ruslan.kalendar@helsinki.fi)\nhttps://github.com/rkalendar/Repeater3\n");
+            System.out.println("REPEATER3 (2024) by Ruslan Kalendar (ruslan.kalendar@helsinki.fi)\nhttps://github.com/rkalendar/Repeater3\n");
             System.out.println("Basic usage:");
             System.out.println("java -jar \\Repeater3\\dist\\Repeater3.jar <inputfile>/<inputfolderpath> <optional_commands>");
             System.out.println("Common options:");
             System.out.println("kmer=12\tminimal kmer=12 (default 21)");
-            System.out.println("min=100\tinitial repeat length (default min=50), it can be equal to kmer=");
-            System.out.println("sln=150\tstring length (default sln=100), it can be equal to min=");
+            System.out.println("min=100\trepeat length (default min=50), it can be equal to kmer=");
             System.out.println("flangs=100\textend the flanks of the repeat with an appropriate length (100 nt) (default flangs=0)");
             System.out.println("image=10000x3000\t (by default, the dimensionality of the image is automatically determined)");
             System.out.println("mask=true/false\tgenerate a new file with masking repeats (default mask=true)");
@@ -163,7 +151,7 @@ public class Repeater {
         return (Integer.parseInt(r.toString()));
     }
 
-    private static void SaveResult(String infile, int kmer, int minlen, int seqlen, int flanksshow, boolean seqshow, boolean ssrrun, int width, int hight) {
+    private static void SaveResult(String infile, int kmer, int minlen,  int flanksshow, boolean seqshow, boolean ssrrun, int width, int hight) {
         try {
             long startTime = System.nanoTime();
             byte[] binaryArray = Files.readAllBytes(Paths.get(infile));
@@ -178,8 +166,7 @@ public class Repeater {
             Tandems s2 = new Tandems();
             s2.SetSequences(rf.getSequences(), rf.getNames());
             s2.SetKmerLen(kmer);
-            s2.SetTandemLen(minlen);
-            s2.SetSequenceLen(seqlen);
+            s2.SetMinimalRepeatLen(minlen);
             s2.SetShowSeq(seqshow);
             s2.SetFlanks(flanksshow);
             s2.SetFileName(infile);
@@ -190,8 +177,7 @@ public class Repeater {
                 s2.SetImage(width, hight);
             }
             System.out.println("kmer=" + kmer);
-            System.out.println("Initial string length =" + minlen);
-            System.out.println("String length =" + seqlen);
+            System.out.println("Minimal repeat length =" + minlen);
             s2.Run();
 
             System.out.println("Shown repeated sequence is " + seqshow);
