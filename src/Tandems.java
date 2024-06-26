@@ -44,12 +44,6 @@ public final class Tandems {
         }
     }
 
-    public void SetTelomers(boolean i) {
-        if (i) {
-            telomers = 14;
-        }
-    }
-
     public void SetFlanks(int i) {
         flanks = i;
     }
@@ -68,36 +62,6 @@ public final class Tandems {
             PrintResult(i, u);
             PictureSave(i, iwidth, iheight);
         }
-    }
-
-    public static int[] convertToIntArray(ArrayList<Integer> list) {
-        // Create an int array of the same size as the ArrayList
-        int[] array = new int[list.size()];
-
-        // Fill the int array with elements from the ArrayList
-        for (int i = 0; i < list.size(); i++) {
-            array[i] = list.get(i);
-        }
-
-        return array;
-    }
-
-    public int[] ArrayExtend(int[] srcArray, int n) {
-        int[] destArray = new int[srcArray.length + n];
-        System.arraycopy(srcArray, 0, destArray, 0, srcArray.length);
-        return destArray;
-    }
-
-    public int[] ArrayTrim(int[] srcArray, int n) {
-        int[] destArray = new int[n];
-        System.arraycopy(srcArray, 0, destArray, 0, n);
-        return destArray;
-    }
-
-    public byte[] ArrayExtendByte(byte[] srcArray, int n) {
-        byte[] destArray = new byte[srcArray.length + n];
-        System.arraycopy(srcArray, 0, destArray, 0, srcArray.length);
-        return destArray;
     }
 
     private byte[] Mask(String seq, int kmer) {
@@ -320,7 +284,7 @@ public final class Tandems {
         }
         int k = 0;
         int l = seq[n].length();
-        float z = l;
+        float z = 0;
         long duration = (System.nanoTime() - startTime) / 1000000000;
 
         String reportfile = filePath + "_" + (n + 1) + ".gff";
@@ -335,8 +299,8 @@ public final class Tandems {
             System.out.println("Saving masked file: " + maskedfile);
             char[] c = seq[n].toCharArray();
             for (int i = 0; i < l; i++) {
-                if (m[i] == 0) {
-                    z--;
+                if (m[i] > 0) {// if (m[i] == 0) {
+                    z++;
                     c[i] = (char) (c[i] - 32);
                 }
             }
@@ -427,8 +391,9 @@ public final class Tandems {
         }
         int k = 100;
         int b = bb.size();
+        int z = 5;        // step between clusters
         int l = seq[n].length();
-        int width = l < 5_000_000 ? l / 200 : 5_000 + (l - 5_000) / 300; // image=10000x3000
+        int width = l < 5_000_000 ? l / 250 : 5_000 + (l - 5_000) / 250; // image=10000x3000
         if (dw > 0) {
             width = dw;
         }
@@ -438,25 +403,24 @@ public final class Tandems {
         if (width < 500) {
             width = 500;
         }
-        int height = b < 500 ? k + b : 510 + (b - 500) / 400;        //too big a picture leads to an error
+        int height = b * z; //b < 500 ? k + b : 510 + (b - 500) / 400;        //too big a picture leads to an error
         if (dh > 0) {
             height = dh;
         }
         if (height > 46340) {
             height = 46340;
         }
-        if (height < 300) {
-            height = 300;
+        if (height < 100) {
+            height = 100;
         }
-        float dotSize = 3 + (b / 500);                                  //7.0f;
-        double w1 = (double) width / l;                                 // nucleotides per pixel        
-        if (dotSize < 1) {
-            dotSize = 1.0f;
-        }
-        if (dotSize > 10) {
-            dotSize = 10.0f;
-        }
+        height = height + 50;
+        z = height / (b + 2);
 
+        float dotSize = 12 - (b / 100);                                  //7.0f;
+        if (dotSize < 5) {
+            dotSize = 5.0f;
+        }
+        double w1 = (double) width / l;                                 // nucleotides per pixel        
         String pngfile = filePath + "_" + (n + 1) + ".png";
         if (nseq == 1) {
             pngfile = filePath + ".png";
@@ -465,7 +429,7 @@ public final class Tandems {
         BufferedImage image = new BufferedImage(width + 100, height + 100, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
 
-        g2d.setStroke(new BasicStroke(dotSize));
+        g2d.setStroke(new BasicStroke(1));
         g2d.setColor(Color.WHITE);
         g2d.fillRect(0, 0, width + 100, height + 100);
         g2d.setColor(Color.BLACK);
@@ -477,25 +441,20 @@ public final class Tandems {
             g2d.drawLine(i * w + 50, 5, i * w + 50, 20);
             g2d.drawString(String.format("%,d", (1 + (int) (i * d))), 55 + i * w, 10);
         }
-
+        int y = 25;
         for (int i = 0; i < b; i++) {
             int[] z7 = bb.get(i);
-
-            int y = (i + 100);// y1-y2 line                
+            y = y + i + z;  // y1-y2 line                
             for (int j = 1; j < z7[0]; j += 2) {
-
                 int x1 = 50 + (int) (z7[j] * w1);
                 int x2 = 50 + (int) ((z7[j] + Math.abs(z7[j + 1])) * w1);
-
                 if (z7[j + 1] > 0) {
                     g2d.setColor(Color.BLUE);
                 } else {
                     g2d.setColor(Color.RED);
                 }
                 g2d.drawLine(x1, y, x2, y); //(int x1, int y1, int x2, int y2)
-
             }
-
         }
         g2d.dispose();
         try {
@@ -514,11 +473,9 @@ public final class Tandems {
     public int reallen = 0;
     private String[] seq;
     private String[] sname;
-    private final int ssrlen = 30;
     private int minlenblock = 50;   // repeat length user control  
     private int kmerln = 21;
     private int flanks = 20;
-    private int telomers = 11;      // Kmax=11 ->SSR  Kmax=14 -> telomers
     private boolean SeqShow;
     private ArrayList<int[]> bb;
     private long startTime;
