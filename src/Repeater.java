@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.io.File;
 import java.nio.file.Files;
@@ -11,7 +10,7 @@ public class Repeater {
             String infile = args[0]; // file path or Folder
             String s = String.join(" ", args).toLowerCase() + " ";
             int kmer = 21;
-            int minlen = 50;
+            int minlen = 100;
             int width = 0;
             int hight = 0;
             int flanksshow = 0;

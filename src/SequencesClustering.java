@@ -1,4 +1,3 @@
-
 import java.util.HashMap;
 
 public final class SequencesClustering {
@@ -127,7 +126,7 @@ public final class SequencesClustering {
             }
 
         }
-        m = new HashMap<>();
+        m.clear();
 
         //clustering
         cx = new int[nseq];      // clusters        
@@ -187,10 +186,9 @@ public final class SequencesClustering {
             }
 
         }
-
+        n++;
         for (int h = 0; h < nseq; h++) {
             if (cx[h] == 0) {
-                n++;
                 cx[h] = n;
             }
         }

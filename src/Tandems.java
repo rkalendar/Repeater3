@@ -374,7 +374,7 @@ public final class Tandems {
         if (bb == null) {
             return;
         }
-        int k = 100;
+    
         int b = bb.size();
         int z = 5;        // step between clusters
         int l = seq[n].length();
@@ -402,12 +402,13 @@ public final class Tandems {
         z = height / (b + 2);
 
         float dotSize = 10 - (b / 100);
-        if (dotSize < 3) {
-            dotSize = 3.0f;
+        if (dotSize < 7) {
+            dotSize = 7.0f;
         }
         if (dotSize > 7) {
             dotSize = 7.0f;
         }
+             
         double w1 = (double) width / l;       // nucleotides per pixel        
         String pngfile = filePath + "_" + (n + 1) + ".png";
         if (nseq == 1) {
