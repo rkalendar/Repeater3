@@ -57,7 +57,6 @@ public final class Tandems {
         for (int i = 0; i < nseq; i++) {
             reallen = 0;
             byte[] u = Mask(seq[i], kmerln);
-
             ClusteringMasking(seq[i], u, kmerln, minlenblock);
             PrintResult(i, u);
             PictureSave(i, iwidth, iheight);
@@ -215,33 +214,26 @@ public final class Tandems {
             }
         }
 
-        ArrayList<Integer> z2 = new ArrayList<>();
+        int n = 0;
         for (int i = 0; i < z.size(); i += 2) {
             int x1 = z.get(i);
             int x2 = z.get(i + 1);
             if (x2 - x1 > minlenblock) {
-                z2.add(x1);
-                z2.add(x2);
+                n += 2;
             }
         }
-
-        int n = z2.size();
-        ArrayList<String> g = new ArrayList<>();
-        z = new ArrayList<>();
-        for (int i = 0; i < n; i = i + 2) {
-            int x1 = z2.get(i);
-            int x2 = z2.get(i + 1);
+        int[] z2 = new int[n];
+        n = -1;
+        for (int i = 0; i < z.size(); i += 2) {
+            int x1 = z.get(i);
+            int x2 = z.get(i + 1);
             if (x2 - x1 > minlenblock) {
-                String s = seq.substring(x1, 1 + x2);
-                z.add(x1);// location on sequence
-                g.add(s); // repeat sequence
+                z2[++n] = x1;
+                z2[++n] = x2;
             }
         }
 
-        String[] s = new String[g.size()];
-        s = g.toArray(s);
-
-        SequencesClustering sc = new SequencesClustering(s, 50, true, kmer, minlenblock);
+        SequencesClustering sc = new SequencesClustering(seq, z2, 70, true, kmer, minlenblock);
         int[] q = sc.Result();
         int ncl = sc.getNcl();
 
@@ -253,25 +245,18 @@ public final class Tandems {
         for (int f = 1; f < ncl + 1; f++) {
             int[] k7 = new int[q.length + q.length + 1];
             int h = 0;
+            int p = 0;
             for (j = 0; j < q.length; j++) {
+                p = j * 2;
                 if (q[j] == f) {
                     k7[0] = k7[0] + 2;
                     h++;
-                    k7[h] = z.get(j);
+                    k7[h] = z2[p];
                     h++;
-                    k7[h] = s[j].length();
+                    k7[h] = z2[p + 1] - z2[p] + 1;
                 }
             }
             if (h > 0) {
-                bb.add(k7);
-            }
-        }
-        for (j = 0; j < q.length; j++) {
-            if (q[j] == 0) {
-                int[] k7 = new int[3];
-                k7[0] = 2;
-                k7[1] = z.get(j);
-                k7[2] = s[j].length();
                 bb.add(k7);
             }
         }
@@ -403,7 +388,7 @@ public final class Tandems {
         if (width < 500) {
             width = 500;
         }
-        int height = b * z; //b < 500 ? k + b : 510 + (b - 500) / 400;        //too big a picture leads to an error
+        int height = b * z;      //too big a picture leads to an error
         if (dh > 0) {
             height = dh;
         }
@@ -416,11 +401,14 @@ public final class Tandems {
         height = height + 50;
         z = height / (b + 2);
 
-        float dotSize = 12 - (b / 100);                                  //7.0f;
-        if (dotSize < 5) {
-            dotSize = 5.0f;
+        float dotSize = 10 - (b / 100);
+        if (dotSize < 3) {
+            dotSize = 3.0f;
         }
-        double w1 = (double) width / l;                                 // nucleotides per pixel        
+        if (dotSize > 7) {
+            dotSize = 7.0f;
+        }
+        double w1 = (double) width / l;       // nucleotides per pixel        
         String pngfile = filePath + "_" + (n + 1) + ".png";
         if (nseq == 1) {
             pngfile = filePath + ".png";
@@ -429,7 +417,7 @@ public final class Tandems {
         BufferedImage image = new BufferedImage(width + 100, height + 100, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
 
-        g2d.setStroke(new BasicStroke(1));
+        g2d.setStroke(new BasicStroke(dotSize));
         g2d.setColor(Color.WHITE);
         g2d.fillRect(0, 0, width + 100, height + 100);
         g2d.setColor(Color.BLACK);
